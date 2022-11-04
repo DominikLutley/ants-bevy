@@ -1,0 +1,19 @@
+[package]
+name = "ants-bevy"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# TODO: remove dynamic linking before building release version
+bevy = { version = "0.8.1", features = ["dynamic"] }
+rand = "0.8.5"
+
+[dev-dependencies]
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3
