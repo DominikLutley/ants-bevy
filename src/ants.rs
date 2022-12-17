@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_rapier2d::prelude::*;
 use rand::Rng;
 
 use crate::constants::{ANT_COUNT, ANT_SIZE, ANT_SPEED, ANT_WANDER_PERCENT};
@@ -7,7 +8,7 @@ use crate::constants::{ANT_COUNT, ANT_SIZE, ANT_SPEED, ANT_WANDER_PERCENT};
 pub struct Ant;
 
 #[derive(Bundle)]
-pub struct AntBundle {
+struct AntBundle {
     _a: Ant,
     #[bundle]
     sprite: SpriteBundle,
@@ -39,6 +40,14 @@ pub fn spawn_ants(mut commands: Commands) {
     for _i in 0..ANT_COUNT {
         let angle = rng.gen_range(0.0..2.0 * std::f32::consts::PI);
         commands.spawn_bundle(AntBundle::new(Vec2::new(0., 0.), angle));
+        commands.spawn().insert(Collider::ball(ANT_SIZE / 2.0));
+    }
+}
+
+pub fn move_ants(time: Res<Time>, mut query: Query<&mut Transform, With<Ant>>) {
+    for mut transform in query.iter_mut() {
+        rotate_ant(&mut transform);
+        translate_ant(&mut transform, time.delta_seconds());
     }
 }
 
@@ -52,11 +61,4 @@ fn rotate_ant(transform: &mut Transform) {
 fn translate_ant(transform: &mut Transform, delta_seconds: f32) {
     let movement_direction = transform.rotation * Vec3::Y;
     transform.translation += movement_direction * ANT_SPEED * delta_seconds;
-}
-
-pub fn move_ants(time: Res<Time>, mut query: Query<&mut Transform, With<Ant>>) {
-    for mut transform in query.iter_mut() {
-        rotate_ant(&mut transform);
-        translate_ant(&mut transform, time.delta_seconds());
-    }
 }

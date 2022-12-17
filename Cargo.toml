@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 # TODO: remove dynamic linking before building release version
 bevy = { version = "0.8.1", features = ["dynamic"] }
+bevy_rapier2d = "0.18.0"
 rand = "0.8.5"
 
 [dev-dependencies]
