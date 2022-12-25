@@ -32,16 +32,3 @@ fn setup_camera_2d(mut commands: Commands) {
         ..Default::default()
     });
 }
-
-// fn display_events(
-//     mut collision_events: EventReader<CollisionEvent>,
-//     mut contact_force_events: EventReader<ContactForceEvent>,
-// ) {
-//     for collision_event in collision_events.iter() {
-//         println!("Received collision event: {:?}", collision_event);
-//     }
-
-//     for contact_force_event in contact_force_events.iter() {
-//         println!("Received contact force event: {:?}", contact_force_event);
-//     }
-// }
