@@ -1,9 +1,10 @@
+use crate::ants::detect_walls::detect_walls;
 use bevy::core_pipeline::clear_color::ClearColorConfig;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 mod ants;
-use ants::{detect_walls, move_ants, spawn_ants};
+use ants::{move_ants, spawn_ants};
 use collisions::handle_collisions;
 use walls::spawn_walls;
 mod collisions;
