@@ -4,6 +4,7 @@ use bevy_rapier2d::prelude::*;
 
 mod ants;
 use ants::detect_food::detect_food;
+use ants::detect_nest::detect_nest;
 use ants::detect_walls::detect_walls;
 use ants::move_ants::move_ants;
 use ants::spawn_ants;
@@ -35,6 +36,7 @@ fn main() {
         .add_system(move_ants)
         .add_system(detect_walls)
         .add_system(detect_food)
+        .add_system(detect_nest)
         .add_system(handle_collisions)
         .run();
 }
