@@ -1,14 +1,14 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
-use crate::constants::FOOD_SIZE;
+use crate::constants::NEST_SIZE;
 
 #[derive(Component)]
-pub struct Food;
+pub struct Nest;
 
 #[derive(Bundle)]
-struct FoodBundle {
-    _food: Food,
+struct NestBundle {
+    _nest: Nest,
     // Collisions
     collider: Collider,
     collision_groups: CollisionGroups,
@@ -19,10 +19,10 @@ struct FoodBundle {
     sprite: SpriteBundle,
 }
 
-impl FoodBundle {
-    fn new(point: Vec2) -> FoodBundle {
-        FoodBundle {
-            _food: Food,
+impl NestBundle {
+    fn new(point: Vec2) -> NestBundle {
+        NestBundle {
+            _nest: Nest,
             collider: Collider::cuboid(0.5, 0.5),
             collision_groups: CollisionGroups::new(
                 Group::from_bits_truncate(0b0010),
@@ -36,14 +36,14 @@ impl FoodBundle {
                 transform: Transform {
                     translation: point.extend(0.),
                     scale: Vec3 {
-                        x: FOOD_SIZE,
-                        y: FOOD_SIZE,
+                        x: NEST_SIZE,
+                        y: NEST_SIZE,
                         z: 1.,
                     },
                     ..default()
                 },
                 sprite: Sprite {
-                    color: Color::rgb(0.4, 1.0, 0.4),
+                    color: Color::rgb(0.6, 0.4, 0.4),
                     ..default()
                 },
                 ..default()
@@ -52,13 +52,6 @@ impl FoodBundle {
     }
 }
 
-pub fn spawn_food(mut commands: Commands) {
-    for x in (-20..20).step_by(FOOD_SIZE as usize) {
-        for y in (180..210).step_by(FOOD_SIZE as usize) {
-            commands.spawn_bundle(FoodBundle::new(Vec2 {
-                x: x as f32,
-                y: y as f32,
-            }));
-        }
-    }
+pub fn spawn_nest(mut commands: Commands) {
+    commands.spawn_bundle(NestBundle::new(Vec2 { x: 0., y: 0. }));
 }

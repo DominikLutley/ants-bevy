@@ -12,3 +12,6 @@ pub const FIELD_SIZE: f32 = 250.;
 
 // FOOD
 pub const FOOD_SIZE: f32 = 2.;
+
+// NEST
+pub const NEST_SIZE: f32 = 15.;
