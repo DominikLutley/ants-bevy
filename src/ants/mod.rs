@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use rand::Rng;
 pub mod detect_food;
+pub mod detect_nest;
 pub mod detect_walls;
 pub mod move_ants;
 
@@ -55,12 +56,25 @@ impl FoodInRange {
     }
 }
 
+#[derive(Component)]
+pub struct NestInRange(Option<Entity>);
+
+impl NestInRange {
+    pub fn set(&mut self, nest: Entity) {
+        self.0 = Some(nest);
+    }
+    pub fn unset(&mut self) {
+        self.0 = None;
+    }
+}
+
 #[derive(Bundle)]
 struct AntBundle {
     _ant: Ant,
     has_food: HasFood,
     walls_in_range: WallsInRange,
     food_in_range: FoodInRange,
+    nest_in_range: NestInRange,
     // Collisions
     collider: Collider,
     collision_groups: CollisionGroups,
@@ -76,6 +90,7 @@ impl AntBundle {
             has_food: HasFood(false),
             walls_in_range: WallsInRange(Vec::new()),
             food_in_range: FoodInRange(None),
+            nest_in_range: NestInRange(None),
             // Collisions
             collider: Collider::ball(ANT_VIEW_RADIUS / ANT_SIZE),
             collision_groups: CollisionGroups::new(
