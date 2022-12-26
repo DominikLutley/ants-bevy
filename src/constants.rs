@@ -9,3 +9,6 @@ pub const ANT_WANDER_PERCENT: f32 = 5.;
 // WALLS
 pub const WALL_SIZE: f32 = 10.;
 pub const FIELD_SIZE: f32 = 250.;
+
+// FOOD
+pub const FOOD_SIZE: f32 = 2.;

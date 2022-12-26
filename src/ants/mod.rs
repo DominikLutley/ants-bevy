@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use rand::Rng;
+pub mod detect_food;
 pub mod detect_walls;
 pub mod move_ants;
 
@@ -10,22 +11,56 @@ use crate::constants::{ANT_COUNT, ANT_SIZE, ANT_VIEW_RADIUS};
 pub struct Ant;
 
 #[derive(Component)]
+pub struct HasFood(bool);
+
+impl HasFood {
+    pub fn set(&mut self) {
+        self.0 = true;
+    }
+    pub fn unset(&mut self) {
+        self.0 = false;
+    }
+    pub fn get(&self) -> bool {
+        self.0
+    }
+}
+
+#[derive(Component)]
 pub struct WallsInRange(pub Vec<Entity>);
 
 impl WallsInRange {
     pub fn add_wall(&mut self, wall: Entity) {
         self.0.push(wall);
     }
-
     pub fn remove_wall(&mut self, wall: Entity) {
         self.0.retain(|x| wall.id() != x.id());
+    }
+}
+
+#[derive(Component)]
+pub struct FoodInRange(pub Option<Entity>);
+
+impl FoodInRange {
+    fn set(&mut self, food: Entity) {
+        self.0 = Some(food);
+    }
+    pub fn set_if_none(&mut self, food: Entity) {
+        match self.0 {
+            None => self.set(food),
+            _ => {}
+        }
+    }
+    pub fn unset(&mut self) {
+        self.0 = None;
     }
 }
 
 #[derive(Bundle)]
 struct AntBundle {
     _ant: Ant,
+    has_food: HasFood,
     walls_in_range: WallsInRange,
+    food_in_range: FoodInRange,
     // Collisions
     collider: Collider,
     collision_groups: CollisionGroups,
@@ -38,7 +73,9 @@ impl AntBundle {
     fn new(position: Vec2, rotation: f32) -> AntBundle {
         AntBundle {
             _ant: Ant,
+            has_food: HasFood(false),
             walls_in_range: WallsInRange(Vec::new()),
+            food_in_range: FoodInRange(None),
             // Collisions
             collider: Collider::ball(ANT_VIEW_RADIUS / ANT_SIZE),
             collision_groups: CollisionGroups::new(

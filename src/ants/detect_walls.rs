@@ -1,8 +1,9 @@
+use bevy::prelude::*;
+
 use crate::ants::Ant;
 use crate::ants::WallsInRange;
 use crate::constants::ANT_VIEW_ARC;
 use crate::walls::Wall;
-use bevy::prelude::*;
 
 struct WallsDetected {
     left: bool,
