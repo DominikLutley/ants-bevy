@@ -4,24 +4,22 @@ use crate::constants::ANT_WANDER_PERCENT;
 use bevy::prelude::*;
 use rand::Rng;
 
-pub fn move_ants(time: Res<Time>, mut query: Query<&mut Transform, With<Ant>>) {
-    for mut transform in query.iter_mut() {
-        rotate_ant(&mut transform);
-        translate_ant(&mut transform, time.delta_seconds());
-    }
-}
+const MAX_ROTATION: f32 = ANT_WANDER_PERCENT / 100.0 * std::f32::consts::PI;
 
-fn rotate_ant(transform: &mut Transform) {
+pub fn rotate_ants(mut query: Query<&mut Transform, With<Ant>>) {
     let mut rng = rand::thread_rng();
-    let max = ANT_WANDER_PERCENT / 100. * std::f32::consts::PI;
-    if max <= 0. {
+    if MAX_ROTATION <= 0.0 {
         return;
     }
-    let diff = rng.gen_range(-1. * max..max);
-    transform.rotate_z(diff);
+    for mut transform in query.iter_mut() {
+        let angle = rng.gen_range(-1.0 * MAX_ROTATION..MAX_ROTATION);
+        transform.rotate_z(angle);
+    }
 }
 
-fn translate_ant(transform: &mut Transform, delta_seconds: f32) {
-    let movement_direction = transform.rotation * Vec3::X;
-    transform.translation += movement_direction * ANT_SPEED * delta_seconds;
+pub fn translate_ants(time: Res<Time>, mut query: Query<&mut Transform, With<Ant>>) {
+    for mut transform in query.iter_mut() {
+        let local_x = transform.local_x();
+        transform.translation += local_x * ANT_SPEED * time.delta_seconds();
+    }
 }
