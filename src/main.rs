@@ -3,6 +3,7 @@ mod constants;
 mod world;
 
 use crate::ants::spawn_ants;
+use ants::collisions::resolve_collisions;
 use ants::move_ants::{rotate_ants, translate_ants};
 use bevy::core_pipeline::clear_color::ClearColorConfig;
 use bevy::prelude::*;
@@ -16,6 +17,7 @@ fn main() {
         .add_startup_system(spawn_world)
         .add_system(rotate_ants)
         .add_system(translate_ants.after(rotate_ants))
+        .add_system(resolve_collisions.after(translate_ants))
         .run();
 }
 
