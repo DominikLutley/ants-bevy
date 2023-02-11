@@ -1,7 +1,8 @@
+pub mod collisions;
+pub mod move_ants;
+
 use bevy::prelude::*;
 use rand::Rng;
-
-pub mod move_ants;
 
 use crate::constants::{ANT_COUNT, ANT_SIZE};
 

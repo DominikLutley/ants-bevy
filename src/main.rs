@@ -1,23 +1,21 @@
+mod ants;
+mod constants;
+mod world;
+
+use crate::ants::spawn_ants;
+use ants::move_ants::{rotate_ants, translate_ants};
 use bevy::core_pipeline::clear_color::ClearColorConfig;
 use bevy::prelude::*;
-
-mod ants;
-use ants::move_ants::{rotate_ants, translate_ants};
-use ants::spawn_ants;
-
-mod grid;
-use grid::spawn_grid;
-
-mod constants;
+use world::spawn_world;
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_startup_system(setup_camera_2d)
         .add_startup_system(spawn_ants)
-        .add_startup_system(spawn_grid)
-        .add_system(translate_ants)
+        .add_startup_system(spawn_world)
         .add_system(rotate_ants)
+        .add_system(translate_ants.after(rotate_ants))
         .run();
 }
 
