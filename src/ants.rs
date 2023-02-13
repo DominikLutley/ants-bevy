@@ -1,5 +1,6 @@
 pub mod collisions;
 pub mod move_ants;
+pub mod pheromones;
 
 use bevy::prelude::*;
 use rand::Rng;
