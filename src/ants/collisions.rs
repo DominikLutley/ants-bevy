@@ -8,10 +8,11 @@ use crate::{
 use super::{move_ants::translate_ant, HasFood};
 
 pub fn resolve_collisions(
-    mut query_ants: Query<(&mut Transform, &mut HasFood), With<Ant>>,
-    query_world: Query<&WorldState>,
+    mut commands: Commands,
+    mut query_ants: Query<(&mut Transform, Entity, Without<HasFood>), With<Ant>>,
+    mut query_world: Query<&mut WorldState>,
 ) {
-    for (mut transform, mut has_food) in query_ants.iter_mut() {
+    for (mut transform, entity, _) in query_ants.iter_mut() {
         let location_state = query_world
             .single()
             .get_location_state(transform.translation.truncate());
@@ -22,7 +23,10 @@ pub fn resolve_collisions(
                 translate_ant(&mut transform);
             }
             Some(LocationState::Food) => {
-                has_food.set();
+                commands.entity(entity).insert(HasFood);
+                query_world
+                    .single_mut()
+                    .remove_food(transform.translation.truncate());
                 transform.rotate_z(std::f32::consts::PI);
                 translate_ant(&mut transform);
             }

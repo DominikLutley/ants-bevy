@@ -5,7 +5,8 @@ mod world;
 use crate::ants::pheromones::drop_pheromones;
 use crate::ants::spawn_ants;
 use ants::collisions::resolve_collisions;
-use ants::move_ants::{rotate_ants, translate_ants};
+use ants::move_ants::{return_to_nest, rotate_ants, save_location, translate_ants};
+use ants::pheromones::detect_pheromones;
 use bevy::core_pipeline::clear_color::ClearColorConfig;
 use bevy::prelude::*;
 use world::{spawn_world, update_world_image};
@@ -17,9 +18,12 @@ fn main() {
         .add_startup_system(spawn_ants)
         .add_startup_system(spawn_world)
         .add_system(rotate_ants)
-        .add_system(translate_ants.after(rotate_ants))
+        .add_system(detect_pheromones.after(rotate_ants))
+        .add_system(translate_ants.after(detect_pheromones))
         .add_system(resolve_collisions.after(translate_ants))
+        .add_system(save_location.after(resolve_collisions))
         .add_system(drop_pheromones.after(resolve_collisions))
+        .add_system(return_to_nest)
         .add_system(update_world_image)
         .run();
 }

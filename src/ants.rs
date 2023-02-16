@@ -5,30 +5,24 @@ pub mod pheromones;
 use bevy::prelude::*;
 use rand::Rng;
 
-use crate::constants::{ANT_COUNT, ANT_SIZE};
+use crate::{
+    constants::{ANT_COUNT, ANT_SIZE},
+    world::WorldLocation,
+};
 
 #[derive(Component)]
 pub struct Ant;
 
 #[derive(Component)]
-pub struct HasFood(bool);
+pub struct HasFood;
 
-impl HasFood {
-    pub fn set(&mut self) {
-        self.0 = true;
-    }
-    pub fn unset(&mut self) {
-        self.0 = false;
-    }
-    pub fn get(&self) -> bool {
-        self.0
-    }
-}
+#[derive(Component)]
+pub struct PathToHome(Vec<WorldLocation>);
 
 #[derive(Bundle)]
 struct AntBundle {
     _ant: Ant,
-    has_food: HasFood,
+    path_to_home: PathToHome,
     #[bundle]
     sprite: SpriteBundle,
 }
@@ -37,7 +31,7 @@ impl AntBundle {
     fn new(position: Vec2, rotation: f32) -> AntBundle {
         AntBundle {
             _ant: Ant,
-            has_food: HasFood(false),
+            path_to_home: PathToHome(Vec::new()),
             sprite: SpriteBundle {
                 transform: Transform {
                     translation: position.extend(1.0),
