@@ -128,7 +128,7 @@ impl WorldState {
         sum
     }
 
-    pub fn query_pheromones(&self, transform: &Transform) -> TurnDirection {
+    pub fn query_surroundings(&self, transform: &Transform) -> TurnDirection {
         let center_dir = transform.local_x().truncate().normalize().extend(0.0);
         let center_location = transform.translation + center_dir * ANT_DETECTION_DISTANCE;
         let center_angle = -1.0 * center_dir.truncate().angle_between(Vec2 { x: 1.0, y: 0.0 });

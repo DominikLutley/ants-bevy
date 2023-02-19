@@ -16,12 +16,12 @@ pub fn drop_pheromones(
     }
 }
 
-pub fn detect_pheromones(
+pub fn detect_surroundings(
     mut query_ants: Query<(&mut Transform, Without<HasFood>), With<Ant>>,
     query_world: Query<&WorldState>,
 ) {
     for (mut transform, _) in query_ants.iter_mut() {
-        match query_world.single().query_pheromones(&transform) {
+        match query_world.single().query_surroundings(&transform) {
             TurnDirection::Left => {
                 transform.rotate_z(ANT_PHEROMONE_TURN_ANGLE);
             }
