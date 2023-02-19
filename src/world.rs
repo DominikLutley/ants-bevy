@@ -32,7 +32,7 @@ impl From<WorldLocation> for Vec3 {
 }
 
 #[derive(Debug)]
-pub struct PheromoneState(u8);
+pub struct PheromoneState(i32);
 
 #[derive(Debug)]
 pub enum LocationState {
@@ -109,8 +109,8 @@ impl WorldState {
         }
     }
 
-    fn pheromone_zone(&self, location: WorldLocation) -> i32 {
-        let mut sum: i32 = 0;
+    fn query_zone(&self, location: WorldLocation) -> LocationState {
+        let mut sum = 0;
         for i in -1 * ANT_DETECTION_RADIUS..=ANT_DETECTION_RADIUS {
             for j in -1 * ANT_DETECTION_RADIUS..=ANT_DETECTION_RADIUS {
                 let state = self
@@ -119,13 +119,14 @@ impl WorldState {
                     .unwrap_or(&LocationState::Ground(PheromoneState(0)));
                 match state {
                     LocationState::Ground(PheromoneState(val)) => {
-                        sum += *val as i32;
+                        sum += *val;
                     }
+                    LocationState::Food => return LocationState::Food,
                     _ => {}
                 }
             }
         }
-        sum
+        LocationState::Ground(PheromoneState(sum))
     }
 
     pub fn query_surroundings(&self, transform: &Transform) -> TurnDirection {
@@ -146,24 +147,38 @@ impl WorldState {
             .normalize()
             .extend(0.0);
         let right_location = transform.translation + right_dir * ANT_DETECTION_DISTANCE;
-        let center_sum = self.pheromone_zone(WorldLocation((
+        let center_sum = self.query_zone(WorldLocation((
             center_location.x.round() as i32,
             center_location.y.round() as i32,
         )));
-        let left_sum = self.pheromone_zone(WorldLocation((
+        let left_sum = self.query_zone(WorldLocation((
             left_location.x.round() as i32,
             left_location.y.round() as i32,
         )));
-        let right_sum = self.pheromone_zone(WorldLocation((
+        let right_sum = self.query_zone(WorldLocation((
             right_location.x.round() as i32,
             right_location.y.round() as i32,
         )));
-        if center_sum >= left_sum && center_sum >= right_sum {
-            TurnDirection::Center
-        } else if left_sum >= right_sum {
-            TurnDirection::Left
-        } else {
-            TurnDirection::Right
+        match (left_sum, center_sum, right_sum) {
+            (
+                LocationState::Ground(PheromoneState(left)),
+                LocationState::Ground(PheromoneState(center)),
+                LocationState::Ground(PheromoneState(right)),
+            ) => {
+                if center >= left && center >= right {
+                    return TurnDirection::Center;
+                } else if left >= right {
+                    return TurnDirection::Left;
+                } else {
+                    return TurnDirection::Right;
+                }
+            }
+            (_, LocationState::Food, _) => return TurnDirection::Center,
+            (_, _, LocationState::Food) => return TurnDirection::Right,
+            (LocationState::Food, _, _) => return TurnDirection::Left,
+            _ => {
+                panic!("Unhandled query_zone response");
+            }
         }
     }
 
@@ -182,7 +197,7 @@ impl WorldState {
                         data.push(8);
                         data.push(54);
                         data.push(34);
-                        data.push(*strength);
+                        data.push((*strength).try_into().unwrap());
                         if *strength > 0 {
                             self.0.insert(
                                 WorldLocation((x, -1 * y)),
